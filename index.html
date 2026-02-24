@@ -615,7 +615,7 @@
         <div class="table-center">
           <div class="table-status" id="table-status">Votação em andamento...</div>
           <div class="avg-display" id="avg-display" style="display:none">
-            <span class="avg-label">Média</span>
+            <span class="avg-label" id="avg-label">Mais votado</span>
             <span class="avg-value" id="avg-value">–</span>
           </div>
         </div>
@@ -947,13 +947,35 @@ function renderRoom(data) {
   if (data.revealed) {
     statusEl.style.display = 'none';
     avgEl.style.display    = '';
-    const nums = Object.values(players)
-      .map(p => parseFloat(p.vote))
-      .filter(n => !isNaN(n));
-    const avg = nums.length
-      ? (nums.reduce((a,b) => a+b, 0) / nums.length).toFixed(1)
-      : '?';
-    document.getElementById('avg-value').textContent = avg;
+
+    // Count votes
+    const voteCounts = {};
+    Object.values(players).forEach(p => {
+      if (p.vote !== null) voteCounts[p.vote] = (voteCounts[p.vote] || 0) + 1;
+    });
+
+    const entries = Object.entries(voteCounts);
+    if (entries.length === 0) {
+      document.getElementById('avg-label').textContent = 'Mais votado';
+      document.getElementById('avg-value').textContent = '–';
+      document.getElementById('avg-value').style.fontSize = '60px';
+    } else {
+      const maxCount = Math.max(...entries.map(([,c]) => c));
+      const winners  = entries.filter(([,c]) => c === maxCount).map(([v]) => v);
+
+      if (winners.length === 1) {
+        document.getElementById('avg-label').textContent = 'Mais votado';
+        document.getElementById('avg-value').textContent = winners[0];
+        document.getElementById('avg-value').style.fontSize = '60px';
+      } else {
+        document.getElementById('avg-label').textContent = 'Empate entre';
+        document.getElementById('avg-value').textContent = winners.join(' · ');
+        // Scale font down if many values
+        document.getElementById('avg-value').style.fontSize =
+          winners.join(' · ').length > 10 ? '28px' : '40px';
+      }
+    }
+
     renderResults(players);
     document.getElementById('results-section').classList.add('show');
   } else {
