@@ -544,6 +544,27 @@
     to   { transform: translateY(0);    opacity: 1; }
   }
 
+  /* ── CLOSED SCREEN ── */
+  #closed {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 20px;
+  }
+  .closed-card {
+    background: var(--surface);
+    border: 1px solid rgba(248,113,113,.3);
+    border-radius: 18px;
+    padding: 48px 40px;
+    max-width: 420px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,.4);
+    animation: slideUp .3s ease;
+  }
+  .closed-icon { font-size: 52px; margin-bottom: 20px; }
+  .closed-card h2 { font-size: 22px; margin-bottom: 10px; }
+  .closed-card p  { color: var(--text-muted); font-family: 'Space Mono', monospace; font-size: 13px; margin-bottom: 28px; line-height: 1.6; }
+
   @media(max-width: 500px) {
     .vote-card { width: 44px; height: 64px; font-size: 13px; }
     .room-header { gap: 8px; }
@@ -584,6 +605,7 @@
         <button class="btn btn-sm btn-accent" onclick="inviteLink()">⬡ Convidar</button>
         <button class="btn btn-sm" id="btn-reveal" onclick="toggleReveal()">👁 Revelar</button>
         <button class="btn btn-sm btn-danger" onclick="resetVotes()">↺ Resetar</button>
+        <button class="btn btn-sm btn-danger" id="btn-close-room" onclick="closeRoom()" style="display:none">✕ Encerrar Sala</button>
       </div>
     </div>
 
@@ -618,6 +640,16 @@
   </div>
 
 </div>
+
+  <!-- CLOSED -->
+  <div id="closed" class="screen">
+    <div class="closed-card">
+      <div class="closed-icon">🚪</div>
+      <h2>Sala Encerrada</h2>
+      <p>O facilitador encerrou esta sala.<br>Todos os dados foram removidos.</p>
+      <button class="btn btn-primary" style="width:100%" onclick="goHome()">← Voltar para o início</button>
+    </div>
+  </div>
 
 <!-- CREATE MODAL -->
 <div class="modal-overlay" id="create-modal">
@@ -674,7 +706,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
-  getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, collection
+  getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 /* ═══════════════════════════════════
@@ -868,7 +900,16 @@ function startListener() {
   if (unsubscribe) unsubscribe();
   const roomRef = doc(db, 'rooms', state.roomId);
   unsubscribe = onSnapshot(roomRef, (snap) => {
-    if (snap.exists()) renderRoom(snap.data());
+    if (!snap.exists()) {
+      // Room was deleted — show closed screen to guests
+      if (!state.isHost) {
+        if (unsubscribe) { unsubscribe(); unsubscribe = null; }
+        localStorage.removeItem('ppoker_session');
+        showScreen('closed');
+      }
+      return;
+    }
+    renderRoom(snap.data());
   });
 }
 
@@ -932,10 +973,14 @@ function renderRoom(data) {
   // Reveal button label
   document.getElementById('btn-reveal').textContent = data.revealed ? '🔒 Ocultar' : '👁 Revelar';
 
-  // Non-hosts can't reveal/reset
+  // Non-hosts can't reveal/reset/close
   const isHost = state.isHost;
-  document.getElementById('btn-reveal').style.display  = isHost ? '' : 'none';
-  document.querySelector('.btn-danger').style.display   = isHost ? '' : 'none';
+  document.getElementById('btn-reveal').style.display     = isHost ? '' : 'none';
+  document.getElementById('btn-close-room').style.display = isHost ? '' : 'none';
+  // Reset button (first .btn-danger is reset, second is close-room — target by id)
+  document.querySelectorAll('.btn-danger').forEach(b => {
+    if (b.id !== 'btn-close-room') b.style.display = isHost ? '' : 'none';
+  });
 }
 
 function playerCardHTML(id, player, data) {
@@ -1021,6 +1066,32 @@ window.resetVotes = async function() {
 };
 
 /* ═══════════════════════════════════
+   CLOSE ROOM (host only)
+═══════════════════════════════════ */
+window.closeRoom = async function() {
+  if (!state.isHost) return;
+  if (!confirm('Encerrar a sala? Todos os dados serão apagados e os participantes serão desconectados.')) return;
+  loading(true, 'Encerrando sala...');
+  try {
+    if (unsubscribe) { unsubscribe(); unsubscribe = null; }
+    await deleteDoc(doc(db, 'rooms', state.roomId));
+    localStorage.removeItem('ppoker_session');
+    loading(false);
+    goHome();
+  } catch(e) {
+    loading(false);
+    alert('Erro ao encerrar sala: ' + e.message);
+  }
+};
+
+window.goHome = function() {
+  state = { roomId: null, myId: null, myName: null, isHost: false };
+  // Remove ?room= from URL without reload
+  history.replaceState(null, '', location.pathname);
+  showScreen('home');
+};
+
+/* ═══════════════════════════════════
    INVITE
 ═══════════════════════════════════ */
 window.inviteLink = function() {
@@ -1082,8 +1153,7 @@ async function init() {
       const snap = await getDoc(doc(db, 'rooms', roomId));
       if (!snap.exists()) {
         loading(false);
-        alert('Sala não encontrada.');
-        showScreen('home');
+        showScreen('closed');
         return;
       }
 
