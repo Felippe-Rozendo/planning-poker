@@ -18,7 +18,6 @@
     --text: #e2e8f0;
     --text-muted: #64748b;
     --border: #2a2a3d;
-    --card-back: #1e1e2e;
     --danger: #f87171;
     --yellow: #fbbf24;
     --radius: 12px;
@@ -34,7 +33,6 @@
     overflow-x: hidden;
   }
 
-  /* ─── BACKGROUND ─── */
   body::before {
     content: '';
     position: fixed;
@@ -48,11 +46,10 @@
 
   #app { position: relative; z-index: 1; }
 
-  /* ─── SCREENS ─── */
   .screen { display: none; min-height: 100vh; }
   .screen.active { display: flex; flex-direction: column; }
 
-  /* ─── HOME ─── */
+  /* ── HOME ── */
   #home {
     align-items: center;
     justify-content: center;
@@ -61,7 +58,7 @@
   }
 
   .logo {
-    font-size: 14px;
+    font-size: 13px;
     letter-spacing: 4px;
     text-transform: uppercase;
     color: var(--accent);
@@ -71,10 +68,10 @@
   }
 
   .home-title {
-    font-size: clamp(48px, 8vw, 96px);
+    font-size: clamp(52px, 9vw, 100px);
     font-weight: 800;
-    line-height: 1;
-    letter-spacing: -2px;
+    line-height: .95;
+    letter-spacing: -3px;
     background: linear-gradient(135deg, #e2e8f0 30%, var(--accent2) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -84,8 +81,8 @@
 
   .home-sub {
     color: var(--text-muted);
-    font-size: 16px;
-    margin-bottom: 64px;
+    font-size: 15px;
+    margin-bottom: 56px;
     font-family: 'Space Mono', monospace;
   }
 
@@ -93,8 +90,8 @@
     background: var(--accent);
     color: #0a0a0f;
     border: none;
-    padding: 18px 48px;
-    font-size: 16px;
+    padding: 18px 52px;
+    font-size: 15px;
     font-weight: 700;
     font-family: 'Syne', sans-serif;
     letter-spacing: 1px;
@@ -106,16 +103,16 @@
   }
   .btn-create:hover {
     transform: translateY(-2px);
-    box-shadow: 0 0 60px rgba(110,231,183,.35);
+    box-shadow: 0 0 60px rgba(110,231,183,.4);
   }
 
-  /* ─── MODAL ─── */
+  /* ── MODAL ── */
   .modal-overlay {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,.7);
-    backdrop-filter: blur(6px);
+    background: rgba(0,0,0,.75);
+    backdrop-filter: blur(8px);
     z-index: 100;
     align-items: center;
     justify-content: center;
@@ -126,28 +123,23 @@
   .modal {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 16px;
+    border-radius: 18px;
     padding: 32px;
     width: 100%;
     max-width: 500px;
-    box-shadow: 0 25px 80px rgba(0,0,0,.5);
+    box-shadow: 0 30px 80px rgba(0,0,0,.6);
     animation: slideUp .25s ease;
   }
-
   @keyframes slideUp {
-    from { transform: translateY(20px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
+    from { transform: translateY(24px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
   }
 
-  .modal h2 {
-    font-size: 22px;
-    font-weight: 700;
-    margin-bottom: 24px;
-  }
+  .modal h2 { font-size: 22px; font-weight: 700; margin-bottom: 24px; }
 
   label {
     display: block;
-    font-size: 12px;
+    font-size: 11px;
     letter-spacing: 2px;
     text-transform: uppercase;
     color: var(--text-muted);
@@ -155,7 +147,7 @@
     margin-bottom: 8px;
   }
 
-  input, textarea {
+  input {
     width: 100%;
     background: var(--surface2);
     border: 1px solid var(--border);
@@ -168,16 +160,17 @@
     transition: border-color .2s;
     margin-bottom: 20px;
   }
-  input:focus, textarea:focus { border-color: var(--accent2); }
+  input:focus { border-color: var(--accent2); }
+  input[readonly] { cursor: pointer; background: var(--surface3); }
 
-  .cards-builder { margin-bottom: 20px; }
   .cards-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    margin-top: 10px;
-    margin-bottom: 12px;
+    margin: 10px 0 12px;
+    min-height: 32px;
   }
+
   .card-tag {
     background: var(--surface3);
     border: 1px solid var(--border);
@@ -188,20 +181,11 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    cursor: default;
   }
-  .card-tag .remove-tag {
-    color: var(--text-muted);
-    cursor: pointer;
-    font-size: 16px;
-    line-height: 1;
-  }
-  .card-tag .remove-tag:hover { color: var(--danger); }
+  .remove-tag { color: var(--text-muted); cursor: pointer; font-size: 16px; line-height: 1; }
+  .remove-tag:hover { color: var(--danger); }
 
-  .card-input-row {
-    display: flex;
-    gap: 8px;
-  }
+  .card-input-row { display: flex; gap: 8px; }
   .card-input-row input { margin-bottom: 0; flex: 1; }
 
   .btn {
@@ -215,283 +199,23 @@
     font-size: 14px;
     font-weight: 600;
     transition: all .15s;
+    white-space: nowrap;
   }
   .btn:hover { border-color: var(--accent2); color: var(--accent2); }
-  .btn-primary {
-    background: var(--accent2);
-    border-color: var(--accent2);
-    color: #fff;
-  }
-  .btn-primary:hover { opacity: .9; color: #fff; }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+  .btn-primary { background: var(--accent2); border-color: var(--accent2); color: #fff; }
+  .btn-primary:hover { opacity: .88; color: #fff; }
   .btn-danger { border-color: var(--danger); color: var(--danger); }
   .btn-danger:hover { background: var(--danger); color: #fff; }
   .btn-accent { border-color: var(--accent); color: var(--accent); }
   .btn-accent:hover { background: var(--accent); color: #0a0a0f; }
+  .btn-sm { padding: 7px 14px; font-size: 13px; }
 
-  .modal-footer {
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-    margin-top: 4px;
-  }
+  .preset-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
 
-  /* ─── ROOM ─── */
-  #room { padding: 0; }
+  .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 8px; }
 
-  .room-header {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 16px 24px;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    flex-wrap: wrap;
-  }
-
-  .room-header .room-name {
-    font-size: 14px;
-    font-family: 'Space Mono', monospace;
-    color: var(--accent);
-    font-weight: 700;
-    letter-spacing: 1px;
-  }
-
-  .topic-input {
-    flex: 1;
-    min-width: 200px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 8px 14px;
-    color: var(--text);
-    font-family: 'Syne', sans-serif;
-    font-size: 14px;
-    outline: none;
-    margin-bottom: 0;
-    transition: border-color .2s;
-  }
-  .topic-input:focus { border-color: var(--accent2); }
-  .topic-input::placeholder { color: var(--text-muted); }
-
-  .header-actions {
-    display: flex;
-    gap: 8px;
-    margin-left: auto;
-    flex-wrap: wrap;
-  }
-
-  .btn-sm {
-    padding: 7px 14px;
-    font-size: 13px;
-  }
-
-  /* ─── TABLE ─── */
-  .table-area {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 32px 16px;
-    position: relative;
-  }
-
-  .poker-table {
-    position: relative;
-    width: min(700px, 90vw);
-  }
-
-  /* Players arranged around */
-  .players-top, .players-bottom {
-    display: flex;
-    justify-content: center;
-    gap: 24px;
-    flex-wrap: wrap;
-  }
-  .players-top { margin-bottom: 24px; }
-  .players-bottom { margin-top: 24px; }
-
-  .table-center {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 32px 40px;
-    text-align: center;
-    min-height: 100px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: inset 0 0 60px rgba(0,0,0,.3);
-  }
-
-  .table-status {
-    font-size: 16px;
-    color: var(--text-muted);
-    font-family: 'Space Mono', monospace;
-  }
-
-  .avg-display {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-  }
-  .avg-label {
-    font-size: 11px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    font-family: 'Space Mono', monospace;
-  }
-  .avg-value {
-    font-size: 56px;
-    font-weight: 800;
-    color: var(--accent);
-    line-height: 1;
-  }
-
-  /* ─── PLAYER CARD ─── */
-  .player-slot {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .playing-card {
-    width: 60px;
-    height: 86px;
-    border-radius: 8px;
-    position: relative;
-    cursor: default;
-    transition: transform .2s;
-  }
-
-  /* card back */
-  .playing-card.back {
-    background: linear-gradient(135deg, #1e1e3a, #2d2d50);
-    border: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-  }
-  .playing-card.back::after {
-    content: '';
-    position: absolute;
-    inset: 4px;
-    border-radius: 4px;
-    background: repeating-linear-gradient(
-      45deg,
-      rgba(129,140,248,.15) 0px,
-      rgba(129,140,248,.15) 2px,
-      transparent 2px,
-      transparent 8px
-    );
-  }
-
-  /* card voted (hidden) */
-  .playing-card.voted-hidden {
-    background: linear-gradient(135deg, #1a2e2a, #1e3030);
-    border: 1px solid rgba(110,231,183,.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .playing-card.voted-hidden::before {
-    content: '✓';
-    font-size: 22px;
-    color: var(--accent);
-    opacity: .5;
-  }
-
-  /* card revealed */
-  .playing-card.revealed {
-    background: #fff;
-    border: 1px solid #ddd;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #1a1a2e;
-    font-size: 22px;
-    font-weight: 800;
-    font-family: 'Space Mono', monospace;
-    box-shadow: 0 4px 20px rgba(0,0,0,.3);
-    animation: flipIn .4s ease;
-  }
-
-  @keyframes flipIn {
-    from { transform: rotateY(90deg) scale(.8); }
-    to { transform: rotateY(0) scale(1); }
-  }
-
-  .player-name {
-    font-size: 12px;
-    color: var(--text-muted);
-    font-family: 'Space Mono', monospace;
-    max-width: 80px;
-    text-align: center;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .player-name.me { color: var(--accent); }
-
-  /* ─── VOTE CARDS ─── */
-  .vote-area {
-    padding: 24px 16px;
-    border-top: 1px solid var(--border);
-    text-align: center;
-  }
-
-  .vote-label {
-    font-size: 12px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    font-family: 'Space Mono', monospace;
-    margin-bottom: 16px;
-  }
-
-  .vote-cards {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-
-  .vote-card {
-    width: 52px;
-    height: 76px;
-    background: var(--surface2);
-    border: 2px solid var(--border);
-    border-radius: 8px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 15px;
-    font-weight: 700;
-    font-family: 'Space Mono', monospace;
-    transition: all .15s;
-    color: var(--text);
-  }
-  .vote-card:hover {
-    border-color: var(--accent2);
-    transform: translateY(-6px);
-    color: var(--accent2);
-    box-shadow: 0 8px 24px rgba(129,140,248,.2);
-  }
-  .vote-card.selected {
-    border-color: var(--accent);
-    background: rgba(110,231,183,.1);
-    color: var(--accent);
-    transform: translateY(-8px);
-    box-shadow: 0 8px 24px rgba(110,231,183,.25);
-  }
-
-  /* ─── JOIN SCREEN ─── */
+  /* ── JOIN ── */
   #join {
     align-items: center;
     justify-content: center;
@@ -502,17 +226,304 @@
   .join-card {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 16px;
+    border-radius: 18px;
     padding: 40px;
     max-width: 400px;
     width: 100%;
     box-shadow: 0 20px 60px rgba(0,0,0,.4);
+    animation: slideUp .3s ease;
+  }
+  .join-card h2 { font-size: 24px; margin-bottom: 8px; }
+  .join-room-name { color: var(--accent); font-family: 'Space Mono', monospace; font-size: 14px; margin-bottom: 28px; }
+
+  /* ── ROOM ── */
+  #room { padding: 0; }
+
+  .room-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
   }
 
-  .join-card h2 { font-size: 24px; margin-bottom: 8px; }
-  .join-card p { color: var(--text-muted); font-size: 14px; margin-bottom: 28px; font-family: 'Space Mono', monospace; }
+  .room-badge {
+    font-size: 13px;
+    font-family: 'Space Mono', monospace;
+    color: var(--accent);
+    font-weight: 700;
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
 
-  /* ─── INVITE TOAST ─── */
+  .topic-wrap {
+    flex: 1;
+    min-width: 180px;
+  }
+  .topic-input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 14px;
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color .2s;
+    margin-bottom: 0;
+  }
+  .topic-input:focus { border-color: var(--accent2); }
+  .topic-input::placeholder { color: var(--text-muted); }
+  .topic-input[readonly] { background: transparent; border-color: transparent; cursor: default; }
+  .topic-input[readonly]:focus { border-color: transparent; }
+
+  .header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  /* ── TABLE AREA ── */
+  .table-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px 24px;
+  }
+
+  .poker-table { width: min(760px, 96vw); }
+
+  .players-top, .players-bottom {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .players-top { margin-bottom: 28px; }
+  .players-bottom { margin-top: 28px; }
+
+  .table-center {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 36px 48px;
+    text-align: center;
+    min-height: 110px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 0 60px rgba(0,0,0,.35), 0 0 0 6px var(--surface3);
+  }
+
+  .table-status {
+    font-size: 15px;
+    color: var(--text-muted);
+    font-family: 'Space Mono', monospace;
+  }
+
+  .avg-display { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .avg-label { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--text-muted); font-family: 'Space Mono', monospace; }
+  .avg-value { font-size: 60px; font-weight: 800; color: var(--accent); line-height: 1; }
+
+  /* ── PLAYER CARD ── */
+  .player-slot { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+
+  .playing-card {
+    width: 58px;
+    height: 84px;
+    border-radius: 8px;
+    position: relative;
+    transition: transform .2s;
+  }
+
+  .playing-card.back {
+    background: linear-gradient(135deg, #1e1e3a, #2a2a50);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .playing-card.back::after {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border-radius: 4px;
+    background: repeating-linear-gradient(
+      45deg,
+      rgba(129,140,248,.18) 0px,
+      rgba(129,140,248,.18) 2px,
+      transparent 2px,
+      transparent 8px
+    );
+  }
+
+  .playing-card.voted-hidden {
+    background: linear-gradient(135deg, #1a2e2a, #1c3232);
+    border: 1px solid rgba(110,231,183,.35);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .playing-card.voted-hidden::before {
+    content: '✓';
+    font-size: 22px;
+    color: var(--accent);
+    opacity: .6;
+  }
+
+  .playing-card.revealed {
+    background: #fff;
+    border: 1px solid #ddd;
+    display: flex; align-items: center; justify-content: center;
+    color: #1a1a2e;
+    font-size: 20px;
+    font-weight: 800;
+    font-family: 'Space Mono', monospace;
+    box-shadow: 0 6px 24px rgba(0,0,0,.35);
+    animation: flipIn .35s ease;
+  }
+  @keyframes flipIn {
+    from { transform: rotateY(90deg) scale(.8); }
+    to   { transform: rotateY(0)     scale(1); }
+  }
+
+  .player-name {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: 'Space Mono', monospace;
+    max-width: 74px;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .player-name.me { color: var(--accent); }
+
+  /* ── VOTE CARDS ── */
+  .vote-area {
+    padding: 20px 16px 28px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    background: var(--surface);
+  }
+  .vote-label {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-family: 'Space Mono', monospace;
+    margin-bottom: 14px;
+  }
+  .vote-cards { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+
+  .vote-card {
+    width: 52px;
+    height: 74px;
+    background: var(--surface2);
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Space Mono', monospace;
+    transition: all .15s;
+    color: var(--text);
+    user-select: none;
+  }
+  .vote-card:hover {
+    border-color: var(--accent2);
+    transform: translateY(-7px);
+    color: var(--accent2);
+    box-shadow: 0 10px 28px rgba(129,140,248,.25);
+  }
+  .vote-card.selected {
+    border-color: var(--accent);
+    background: rgba(110,231,183,.1);
+    color: var(--accent);
+    transform: translateY(-10px);
+    box-shadow: 0 10px 28px rgba(110,231,183,.3);
+  }
+
+  /* ── RESULTS TABLE ── */
+  .results-section {
+    display: none;
+    padding: 0 20px 20px;
+    background: var(--bg);
+  }
+  .results-section.show { display: block; }
+
+  .results-grid {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  .results-grid table { width: 100%; border-collapse: collapse; }
+  .results-grid th {
+    background: var(--surface3);
+    padding: 10px 16px;
+    text-align: left;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-family: 'Space Mono', monospace;
+    color: var(--text-muted);
+  }
+  .results-grid td {
+    padding: 10px 16px;
+    border-top: 1px solid var(--border);
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+  }
+  .results-title {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-family: 'Space Mono', monospace;
+    text-align: center;
+    margin-bottom: 12px;
+    padding-top: 20px;
+  }
+
+  .badge {
+    display: inline-block;
+    background: rgba(110,231,183,.1);
+    border: 1px solid rgba(110,231,183,.3);
+    color: var(--accent);
+    border-radius: 4px;
+    padding: 1px 7px;
+    font-size: 10px;
+    font-family: 'Space Mono', monospace;
+    vertical-align: middle;
+  }
+
+  /* ── LOADING ── */
+  .loading-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(10,10,15,.8);
+    backdrop-filter: blur(4px);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .loading-overlay.show { display: flex; }
+  .spinner {
+    width: 40px; height: 40px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { font-family: 'Space Mono', monospace; font-size: 13px; color: var(--text-muted); }
+
+  /* ── TOAST ── */
   .toast {
     position: fixed;
     bottom: 24px;
@@ -520,72 +531,30 @@
     background: var(--surface);
     border: 1px solid var(--accent);
     border-radius: 10px;
-    padding: 14px 20px;
+    padding: 12px 18px;
     font-size: 13px;
     font-family: 'Space Mono', monospace;
     color: var(--accent);
-    z-index: 200;
+    z-index: 300;
     animation: toastIn .3s ease;
-    max-width: 320px;
-    word-break: break-all;
+    max-width: 300px;
   }
   @keyframes toastIn {
-    from { transform: translateY(20px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
+    from { transform: translateY(16px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
   }
 
-  /* ─── RESULTS TABLE ─── */
-  .results-table {
-    display: none;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-    margin: 0 24px 24px;
-  }
-  .results-table.show { display: block; }
-  .results-table table { width: 100%; border-collapse: collapse; }
-  .results-table th {
-    background: var(--surface3);
-    padding: 10px 16px;
-    text-align: left;
-    font-size: 11px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    font-family: 'Space Mono', monospace;
-    color: var(--text-muted);
-  }
-  .results-table td {
-    padding: 10px 16px;
-    border-top: 1px solid var(--border);
-    font-family: 'Space Mono', monospace;
-    font-size: 14px;
-  }
-
-  /* ─── BADGE ─── */
-  .badge {
-    display: inline-block;
-    background: rgba(110,231,183,.1);
-    border: 1px solid rgba(110,231,183,.3);
-    color: var(--accent);
-    border-radius: 4px;
-    padding: 2px 8px;
-    font-size: 11px;
-    font-family: 'Space Mono', monospace;
-    vertical-align: middle;
-  }
-
-  /* ─── RESPONSIVE ─── */
   @media(max-width: 500px) {
-    .room-header { gap: 10px; }
     .vote-card { width: 44px; height: 64px; font-size: 13px; }
+    .room-header { gap: 8px; }
+    .table-center { padding: 24px 20px; }
   }
 </style>
 </head>
 <body>
 <div id="app">
 
-  <!-- ── HOME ── -->
+  <!-- HOME -->
   <div id="home" class="screen active">
     <div class="logo">▲ Planning Poker</div>
     <h1 class="home-title">PLAN<br>POKER</h1>
@@ -593,31 +562,33 @@
     <button class="btn-create" onclick="openCreateModal()">+ Criar Sala</button>
   </div>
 
-  <!-- ── JOIN ── -->
+  <!-- JOIN -->
   <div id="join" class="screen">
     <div class="join-card">
       <h2>Entrar na Sala</h2>
-      <p id="join-room-label">Sala de planejamento</p>
+      <p class="join-room-name" id="join-room-label">Carregando...</p>
       <label>Seu nome</label>
       <input id="join-name" type="text" placeholder="Digite seu nome..." maxlength="20" autocomplete="off">
-      <button class="btn btn-primary" style="width:100%" onclick="confirmJoin()">Entrar →</button>
+      <button class="btn btn-primary" style="width:100%;margin-top:4px" onclick="confirmJoin()">Entrar →</button>
     </div>
   </div>
 
-  <!-- ── ROOM ── -->
+  <!-- ROOM -->
   <div id="room" class="screen">
     <div class="room-header">
-      <span class="room-name" id="room-name-display">SALA</span>
-      <input class="topic-input" id="topic-input" placeholder="✏ O que estamos votando? Descreva a tarefa aqui..." />
+      <span class="room-badge" id="room-name-display">SALA</span>
+      <div class="topic-wrap">
+        <input class="topic-input" id="topic-input" placeholder="✏ O que estamos votando? Descreva a tarefa..." />
+      </div>
       <div class="header-actions">
         <button class="btn btn-sm btn-accent" onclick="inviteLink()">⬡ Convidar</button>
-        <button class="btn btn-sm" onclick="toggleResults()" id="btn-reveal">👁 Revelar</button>
+        <button class="btn btn-sm" id="btn-reveal" onclick="toggleReveal()">👁 Revelar</button>
         <button class="btn btn-sm btn-danger" onclick="resetVotes()">↺ Resetar</button>
       </div>
     </div>
 
     <div class="table-area">
-      <div class="poker-table" id="poker-table">
+      <div class="poker-table">
         <div class="players-top" id="players-top"></div>
         <div class="table-center">
           <div class="table-status" id="table-status">Votação em andamento...</div>
@@ -630,11 +601,14 @@
       </div>
     </div>
 
-    <div class="results-table" id="results-table">
-      <table>
-        <thead><tr><th>Jogador</th><th>Voto</th></tr></thead>
-        <tbody id="results-tbody"></tbody>
-      </table>
+    <div class="results-section" id="results-section">
+      <p class="results-title">Detalhes da Votação</p>
+      <div class="results-grid">
+        <table>
+          <thead><tr><th>Jogador</th><th>Voto</th></tr></thead>
+          <tbody id="results-tbody"></tbody>
+        </table>
+      </div>
     </div>
 
     <div class="vote-area" id="vote-area">
@@ -645,47 +619,91 @@
 
 </div>
 
-<!-- ── CREATE MODAL ── -->
+<!-- CREATE MODAL -->
 <div class="modal-overlay" id="create-modal">
   <div class="modal">
-    <h2>Criar Nova Sala</h2>
+    <h2>🃏 Criar Nova Sala</h2>
     <label>Nome da sala</label>
-    <input id="room-name-input" type="text" placeholder="Ex: Sprint 42" maxlength="30" autocomplete="off">
+    <input id="room-name-input" type="text" placeholder="Ex: Sprint 42" maxlength="40" autocomplete="off">
     <label>Seu nome (facilitador)</label>
     <input id="host-name-input" type="text" placeholder="Ex: João" maxlength="20" autocomplete="off">
-    <div class="cards-builder">
-      <label>Cartas de pontuação</label>
-      <div class="cards-tags" id="cards-tags"></div>
-      <div class="card-input-row">
-        <input id="card-value-input" type="text" placeholder="Ex: 1, 2, 3, XL, ?" maxlength="6">
-        <button class="btn" onclick="addCardValue()">+ Add</button>
-      </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;">
-        <button class="btn btn-sm" onclick="loadPreset('fibonacci')">Fibonacci</button>
-        <button class="btn btn-sm" onclick="loadPreset('tshirt')">T-Shirt</button>
-        <button class="btn btn-sm" onclick="loadPreset('simple')">1–5</button>
-      </div>
+    <label>Cartas de pontuação</label>
+    <div class="cards-tags" id="cards-tags"></div>
+    <div class="card-input-row">
+      <input id="card-value-input" type="text" placeholder="Valor (Ex: 1, M, XL, ?)..." maxlength="6">
+      <button class="btn" onclick="addCardValue()">+ Add</button>
     </div>
-    <div class="modal-footer">
+    <div class="preset-row">
+      <button class="btn btn-sm" onclick="loadPreset('fibonacci')">Fibonacci</button>
+      <button class="btn btn-sm" onclick="loadPreset('tshirt')">T-Shirt</button>
+      <button class="btn btn-sm" onclick="loadPreset('simple')">1 – 5</button>
+    </div>
+    <div class="modal-footer" style="margin-top:24px">
       <button class="btn" onclick="closeCreateModal()">Cancelar</button>
       <button class="btn btn-primary" onclick="createRoom()">Criar Sala →</button>
     </div>
   </div>
 </div>
 
-<script>
-/* ═══════════════════════════════════════════
-   STATE
-═══════════════════════════════════════════ */
-let state = {
-  roomId: null,
-  myId: null,
-  myName: null,
-  isHost: false,
-  revealed: false,
+<!-- INVITE MODAL -->
+<div class="modal-overlay" id="invite-modal">
+  <div class="modal" style="max-width:480px">
+    <h2>🔗 Convidar Jogadores</h2>
+    <p style="color:var(--text-muted);font-family:'Space Mono',monospace;font-size:13px;margin-bottom:20px">
+      Copie o link abaixo e envie para os participantes.
+    </p>
+    <label>Link da sala</label>
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <input id="invite-url-input" type="text" readonly onclick="this.select()" style="margin-bottom:0">
+      <button class="btn btn-accent" onclick="copyInviteUrl()">Copiar</button>
+    </div>
+    <p id="copy-confirm" style="color:var(--accent);font-size:12px;font-family:'Space Mono',monospace;min-height:18px;margin-bottom:16px"></p>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeInviteModal()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div class="loading-overlay" id="loading">
+  <div class="spinner"></div>
+  <span class="loading-text" id="loading-text">Carregando...</span>
+</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {
+  getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, collection
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+/* ═══════════════════════════════════
+   FIREBASE INIT
+═══════════════════════════════════ */
+const firebaseConfig = {
+  apiKey: "AIzaSyCORczJSDMlAKKZHYMEs9HnvDA9aCwSCf4",
+  authDomain: "planning-poker-maersk.firebaseapp.com",
+  projectId: "planning-poker-maersk",
+  storageBucket: "planning-poker-maersk.firebasestorage.app",
+  messagingSenderId: "19906129697",
+  appId: "1:19906129697:web:4dbfb5e77ac0969e6e9860",
 };
 
-let pendingCardValues = [];
+const fbApp = initializeApp(firebaseConfig);
+const db    = getFirestore(fbApp);
+
+/* ═══════════════════════════════════
+   STATE
+═══════════════════════════════════ */
+let state = {
+  roomId:   null,
+  myId:     null,
+  myName:   null,
+  isHost:   false,
+};
+
+let unsubscribe = null;
+let topicDebounce = null;
 
 const PRESETS = {
   fibonacci: ['1','2','3','5','8','13','21','?'],
@@ -693,408 +711,430 @@ const PRESETS = {
   simple:    ['1','2','3','4','5'],
 };
 
-/* ═══════════════════════════════════════════
-   STORAGE HELPERS
-═══════════════════════════════════════════ */
-function getRoomData(roomId) {
-  try { return JSON.parse(localStorage.getItem('ppoker_room_' + roomId)) || null; } catch { return null; }
-}
-function setRoomData(roomId, data) {
-  localStorage.setItem('ppoker_room_' + roomId, JSON.stringify(data));
-  broadcast({ type: 'update', roomId });
-}
+let pendingCards = [...PRESETS.fibonacci];
+
+/* ═══════════════════════════════════
+   HELPERS
+═══════════════════════════════════ */
 function genId() { return Math.random().toString(36).slice(2, 10); }
-
-/* ═══════════════════════════════════════════
-   BROADCAST CHANNEL (same-origin sync)
-═══════════════════════════════════════════ */
-let channel;
-function initChannel() {
-  if (channel) channel.close();
-  channel = new BroadcastChannel('ppoker');
-  channel.onmessage = (e) => {
-    if (e.data?.roomId === state.roomId) renderRoom();
-  };
-}
-function broadcast(msg) {
-  try { channel?.postMessage(msg); } catch {}
-}
-
-/* ═══════════════════════════════════════════
-   SCREENS
-═══════════════════════════════════════════ */
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
+function loading(show, text='Carregando...') {
+  const el = document.getElementById('loading');
+  document.getElementById('loading-text').textContent = text;
+  el.classList.toggle('show', show);
+}
+function toast(msg) {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
 
-/* ═══════════════════════════════════════════
-   CREATE MODAL
-═══════════════════════════════════════════ */
-function openCreateModal() {
-  pendingCardValues = [...PRESETS.fibonacci];
+/* ═══════════════════════════════════
+   CARD BUILDER
+═══════════════════════════════════ */
+window.loadPreset = function(key) {
+  pendingCards = [...PRESETS[key]];
   renderCardTags();
-  document.getElementById('create-modal').classList.add('open');
-  document.getElementById('room-name-input').focus();
-}
-function closeCreateModal() {
-  document.getElementById('create-modal').classList.remove('open');
-}
+};
 
-function loadPreset(key) {
-  pendingCardValues = [...PRESETS[key]];
-  renderCardTags();
-}
-
-function addCardValue() {
+window.addCardValue = function() {
   const inp = document.getElementById('card-value-input');
   const val = inp.value.trim();
   if (!val) return;
-  if (!pendingCardValues.includes(val)) pendingCardValues.push(val);
+  if (!pendingCards.includes(val)) pendingCards.push(val);
   inp.value = '';
   renderCardTags();
   inp.focus();
-}
+};
 
-document.addEventListener('keydown', e => {
-  if (e.key === 'Enter' && document.getElementById('card-value-input') === document.activeElement) addCardValue();
-  if (e.key === 'Enter' && document.getElementById('join-name') === document.activeElement) confirmJoin();
-  if (e.key === 'Enter' && document.getElementById('host-name-input') === document.activeElement) createRoom();
-});
+window.removeCard = function(i) {
+  pendingCards.splice(i, 1);
+  renderCardTags();
+};
 
 function renderCardTags() {
-  const container = document.getElementById('cards-tags');
-  container.innerHTML = pendingCardValues.map((v, i) => `
-    <span class="card-tag">
-      ${v}
-      <span class="remove-tag" onclick="removeCard(${i})">×</span>
-    </span>
-  `).join('');
+  document.getElementById('cards-tags').innerHTML =
+    pendingCards.map((v, i) => `
+      <span class="card-tag">
+        ${v}
+        <span class="remove-tag" onclick="removeCard(${i})">×</span>
+      </span>
+    `).join('');
 }
 
-function removeCard(i) {
-  pendingCardValues.splice(i, 1);
+/* ═══════════════════════════════════
+   CREATE MODAL
+═══════════════════════════════════ */
+window.openCreateModal = function() {
+  pendingCards = [...PRESETS.fibonacci];
   renderCardTags();
-}
+  document.getElementById('room-name-input').value = '';
+  document.getElementById('host-name-input').value = '';
+  document.getElementById('create-modal').classList.add('open');
+  setTimeout(() => document.getElementById('room-name-input').focus(), 80);
+};
 
-function createRoom() {
-  const name = document.getElementById('room-name-input').value.trim();
+window.closeCreateModal = function() {
+  document.getElementById('create-modal').classList.remove('open');
+};
+
+window.createRoom = async function() {
+  const roomName = document.getElementById('room-name-input').value.trim();
   const hostName = document.getElementById('host-name-input').value.trim();
-  if (!name) { alert('Informe o nome da sala.'); return; }
+  if (!roomName) { alert('Informe o nome da sala.'); return; }
   if (!hostName) { alert('Informe seu nome.'); return; }
-  if (pendingCardValues.length < 2) { alert('Adicione pelo menos 2 cartas.'); return; }
+  if (pendingCards.length < 2) { alert('Adicione pelo menos 2 cartas.'); return; }
+
+  loading(true, 'Criando sala...');
 
   const roomId = genId();
-  const myId = genId();
+  const myId   = genId();
 
   const roomData = {
-    id: roomId,
-    name,
-    cards: pendingCardValues,
-    hostId: myId,
-    topic: '',
-    players: {
+    name:     roomName,
+    cards:    pendingCards,
+    hostId:   myId,
+    topic:    '',
+    revealed: false,
+    players:  {
       [myId]: { name: hostName, vote: null }
     },
-    revealed: false,
+    createdAt: Date.now(),
   };
 
-  setRoomData(roomId, roomData);
+  try {
+    await setDoc(doc(db, 'rooms', roomId), roomData);
+    state = { roomId, myId, myName: hostName, isHost: true };
+    saveSession(roomId, myId, hostName);
+    closeCreateModal();
+    loading(false);
+    enterRoom(roomData);
+  } catch(e) {
+    loading(false);
+    alert('Erro ao criar sala: ' + e.message);
+  }
+};
 
-  state.roomId = roomId;
-  state.myId = myId;
-  state.myName = hostName;
-  state.isHost = true;
-  state.revealed = false;
-
-  saveMySession(roomId, myId, hostName);
-  initChannel();
-  closeCreateModal();
-  enterRoom();
-}
-
-/* ═══════════════════════════════════════════
+/* ═══════════════════════════════════
    JOIN FLOW
-═══════════════════════════════════════════ */
-function confirmJoin() {
+═══════════════════════════════════ */
+window.confirmJoin = async function() {
   const name = document.getElementById('join-name').value.trim();
   if (!name) { alert('Informe seu nome.'); return; }
 
-  const roomId = state.roomId;
-  const data = getRoomData(roomId);
-  if (!data) { alert('Sala não encontrada.'); return; }
-
+  loading(true, 'Entrando na sala...');
   const myId = genId();
-  data.players[myId] = { name, vote: null };
-  setRoomData(roomId, data);
 
-  state.myId = myId;
-  state.myName = name;
-  state.isHost = false;
-  state.revealed = data.revealed;
+  try {
+    const roomRef = doc(db, 'rooms', state.roomId);
+    await updateDoc(roomRef, {
+      [`players.${myId}`]: { name, vote: null }
+    });
+    state.myId   = myId;
+    state.myName = name;
+    state.isHost = false;
+    saveSession(state.roomId, myId, name);
+    loading(false);
+    const snap = await getDoc(roomRef);
+    enterRoom(snap.data());
+  } catch(e) {
+    loading(false);
+    alert('Erro ao entrar na sala: ' + e.message);
+  }
+};
 
-  saveMySession(roomId, myId, name);
-  initChannel();
-  enterRoom();
+/* ═══════════════════════════════════
+   SESSION
+═══════════════════════════════════ */
+function saveSession(roomId, myId, myName) {
+  localStorage.setItem('ppoker_session', JSON.stringify({ roomId, myId, myName }));
 }
 
-function saveMySession(roomId, myId, myName) {
-  localStorage.setItem('ppoker_me', JSON.stringify({ roomId, myId, myName }));
-}
-
-/* ═══════════════════════════════════════════
-   ENTER ROOM
-═══════════════════════════════════════════ */
-function enterRoom() {
+/* ═══════════════════════════════════
+   ENTER ROOM + REALTIME LISTENER
+═══════════════════════════════════ */
+function enterRoom(initialData) {
   showScreen('room');
-  renderRoom();
-  // Poll every 3s as fallback for cross-browser
-  clearInterval(window._poll);
-  window._poll = setInterval(() => { if (state.roomId) renderRoom(); }, 3000);
+  renderRoom(initialData);
+  startListener();
 }
 
-function renderRoom() {
-  const data = getRoomData(state.roomId);
+function startListener() {
+  if (unsubscribe) unsubscribe();
+  const roomRef = doc(db, 'rooms', state.roomId);
+  unsubscribe = onSnapshot(roomRef, (snap) => {
+    if (snap.exists()) renderRoom(snap.data());
+  });
+}
+
+/* ═══════════════════════════════════
+   RENDER ROOM
+═══════════════════════════════════ */
+function renderRoom(data) {
   if (!data) return;
 
-  state.revealed = data.revealed;
-
-  // Header
   document.getElementById('room-name-display').textContent = data.name;
-  document.getElementById('topic-input').value = data.topic || '';
 
-  // Build vote cards
-  const voteCardsEl = document.getElementById('vote-cards');
-  const players = data.players;
-  const myVote = players[state.myId]?.vote;
+  // Topic — only update if not focused
+  const topicEl = document.getElementById('topic-input');
+  if (document.activeElement !== topicEl) {
+    topicEl.value = data.topic || '';
+  }
 
-  voteCardsEl.innerHTML = data.cards.map(c => `
+  // Host-only: topic editable
+  topicEl.readOnly = !state.isHost;
+
+  // Players
+  const players    = data.players || {};
+  const playerList = Object.entries(players);
+  const half       = Math.ceil(playerList.length / 2);
+
+  document.getElementById('players-top').innerHTML =
+    playerList.slice(0, half).map(([id, p]) => playerCardHTML(id, p, data)).join('');
+  document.getElementById('players-bottom').innerHTML =
+    playerList.slice(half).map(([id, p]) => playerCardHTML(id, p, data)).join('');
+
+  // Table center
+  const statusEl = document.getElementById('table-status');
+  const avgEl    = document.getElementById('avg-display');
+
+  if (data.revealed) {
+    statusEl.style.display = 'none';
+    avgEl.style.display    = '';
+    const nums = Object.values(players)
+      .map(p => parseFloat(p.vote))
+      .filter(n => !isNaN(n));
+    const avg = nums.length
+      ? (nums.reduce((a,b) => a+b, 0) / nums.length).toFixed(1)
+      : '?';
+    document.getElementById('avg-value').textContent = avg;
+    renderResults(players);
+    document.getElementById('results-section').classList.add('show');
+  } else {
+    statusEl.style.display = '';
+    avgEl.style.display    = 'none';
+    document.getElementById('results-section').classList.remove('show');
+  }
+
+  // Vote cards
+  const myVote = players[state.myId]?.vote ?? null;
+  document.getElementById('vote-cards').innerHTML = data.cards.map(c => `
     <div class="vote-card ${myVote === c ? 'selected' : ''}" onclick="castVote('${c}')">
       ${c}
     </div>
   `).join('');
 
-  // Players
-  const playerList = Object.entries(players);
-  const half = Math.ceil(playerList.length / 2);
-  const topPlayers = playerList.slice(0, half);
-  const bottomPlayers = playerList.slice(half);
-
-  document.getElementById('players-top').innerHTML = topPlayers.map(([id, p]) => playerCard(id, p, data)).join('');
-  document.getElementById('players-bottom').innerHTML = bottomPlayers.map(([id, p]) => playerCard(id, p, data)).join('');
-
-  // Table center
-  document.getElementById('table-status').style.display = data.revealed ? 'none' : '';
-  document.getElementById('avg-display').style.display = data.revealed ? '' : 'none';
-
-  if (data.revealed) {
-    const nums = Object.values(players).map(p => parseFloat(p.vote)).filter(n => !isNaN(n));
-    const avg = nums.length ? (nums.reduce((a,b)=>a+b,0)/nums.length).toFixed(1) : '?';
-    document.getElementById('avg-value').textContent = avg;
-    renderResultsTable(players);
-  }
-
-  // Reveal btn
-  const allVoted = Object.values(players).every(p => p.vote !== null);
+  // Reveal button label
   document.getElementById('btn-reveal').textContent = data.revealed ? '🔒 Ocultar' : '👁 Revelar';
 
-  // Host controls visibility
-  document.getElementById('btn-reveal').style.opacity = (state.isHost || allVoted) ? '1' : '.5';
+  // Non-hosts can't reveal/reset
+  const isHost = state.isHost;
+  document.getElementById('btn-reveal').style.display  = isHost ? '' : 'none';
+  document.querySelector('.btn-danger').style.display   = isHost ? '' : 'none';
 }
 
-function playerCard(id, player, data) {
-  const isMe = id === state.myId;
-  const voted = player.vote !== null;
-  let cardClass, cardContent;
+function playerCardHTML(id, player, data) {
+  const isMe   = id === state.myId;
+  const voted  = player.vote !== null;
+  let cls, inner;
 
   if (data.revealed) {
-    cardClass = 'revealed';
-    cardContent = player.vote || '?';
+    cls   = 'revealed';
+    inner = player.vote !== null ? player.vote : '?';
   } else if (voted) {
-    cardClass = 'voted-hidden';
-    cardContent = '';
+    cls   = 'voted-hidden';
+    inner = '';
   } else {
-    cardClass = 'back';
-    cardContent = '';
+    cls   = 'back';
+    inner = '';
   }
 
   return `
     <div class="player-slot">
-      <div class="playing-card ${cardClass}">${cardContent}</div>
+      <div class="playing-card ${cls}">${inner}</div>
       <span class="player-name ${isMe ? 'me' : ''}">${player.name}${isMe ? ' ★' : ''}</span>
     </div>
   `;
 }
 
-function renderResultsTable(players) {
-  const tbody = document.getElementById('results-tbody');
-  tbody.innerHTML = Object.entries(players).map(([id, p]) => `
-    <tr>
-      <td>${p.name}${id === state.myId ? ' <span class="badge">você</span>' : ''}</td>
-      <td><strong>${p.vote !== null ? p.vote : '–'}</strong></td>
-    </tr>
-  `).join('');
+function renderResults(players) {
+  document.getElementById('results-tbody').innerHTML =
+    Object.entries(players).map(([id, p]) => `
+      <tr>
+        <td>${p.name}${id === state.myId ? ' <span class="badge">você</span>' : ''}</td>
+        <td><strong>${p.vote !== null ? p.vote : '–'}</strong></td>
+      </tr>
+    `).join('');
 }
 
-/* ═══════════════════════════════════════════
+/* ═══════════════════════════════════
    VOTE
-═══════════════════════════════════════════ */
-function castVote(val) {
-  const data = getRoomData(state.roomId);
-  if (!data || data.revealed) return; // can still change if revealed? UX choice: allow
+═══════════════════════════════════ */
+window.castVote = async function(val) {
+  const roomRef = doc(db, 'rooms', state.roomId);
+  const snap    = await getDoc(roomRef);
+  const data    = snap.data();
   const current = data.players[state.myId]?.vote;
-  // Toggle (edit vote)
-  data.players[state.myId].vote = (current === val) ? null : val;
-  setRoomData(state.roomId, data);
-  renderRoom();
-}
 
-/* ═══════════════════════════════════════════
+  // Toggle: click same card = remove vote
+  const newVote = current === val ? null : val;
+  await updateDoc(roomRef, { [`players.${state.myId}.vote`]: newVote });
+};
+
+/* ═══════════════════════════════════
    TOPIC
-═══════════════════════════════════════════ */
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('topic-input')?.addEventListener('input', (e) => {
-    const data = getRoomData(state.roomId);
-    if (!data) return;
-    data.topic = e.target.value;
-    setRoomData(state.roomId, data);
-  });
+═══════════════════════════════════ */
+document.getElementById('topic-input')?.addEventListener('input', (e) => {
+  if (!state.isHost) return;
+  clearTimeout(topicDebounce);
+  topicDebounce = setTimeout(async () => {
+    try {
+      await updateDoc(doc(db, 'rooms', state.roomId), { topic: e.target.value });
+    } catch {}
+  }, 600);
 });
 
-/* ═══════════════════════════════════════════
+/* ═══════════════════════════════════
    REVEAL / RESET
-═══════════════════════════════════════════ */
-function toggleResults() {
-  const data = getRoomData(state.roomId);
-  if (!data) return;
-  data.revealed = !data.revealed;
-  setRoomData(state.roomId, data);
-  renderRoom();
-  const rt = document.getElementById('results-table');
-  rt.classList.toggle('show', data.revealed);
-}
+═══════════════════════════════════ */
+window.toggleReveal = async function() {
+  const roomRef = doc(db, 'rooms', state.roomId);
+  const snap    = await getDoc(roomRef);
+  await updateDoc(roomRef, { revealed: !snap.data().revealed });
+};
 
-function resetVotes() {
+window.resetVotes = async function() {
   if (!confirm('Resetar todos os votos?')) return;
-  const data = getRoomData(state.roomId);
-  if (!data) return;
-  Object.keys(data.players).forEach(id => data.players[id].vote = null);
-  data.revealed = false;
-  setRoomData(state.roomId, data);
-  document.getElementById('results-table').classList.remove('show');
-  renderRoom();
-}
+  const roomRef = doc(db, 'rooms', state.roomId);
+  const snap    = await getDoc(roomRef);
+  const data    = snap.data();
+  const updates = { revealed: false };
+  Object.keys(data.players).forEach(id => {
+    updates[`players.${id}.vote`] = null;
+  });
+  await updateDoc(roomRef, updates);
+};
 
-/* ═══════════════════════════════════════════
+/* ═══════════════════════════════════
    INVITE
-═══════════════════════════════════════════ */
-function inviteLink() {
+═══════════════════════════════════ */
+window.inviteLink = function() {
   const url = `${location.origin}${location.pathname}?room=${state.roomId}`;
-  showInviteModal(url);
-}
+  document.getElementById('invite-url-input').value = url;
+  document.getElementById('copy-confirm').textContent = '';
+  document.getElementById('invite-modal').classList.add('open');
+  setTimeout(() => document.getElementById('invite-url-input').select(), 80);
+};
 
-function showInviteModal(url) {
-  // Remove old if exists
-  document.getElementById('invite-modal')?.remove();
+window.closeInviteModal = function() {
+  document.getElementById('invite-modal').classList.remove('open');
+};
 
-  const overlay = document.createElement('div');
-  overlay.id = 'invite-modal';
-  overlay.className = 'modal-overlay open';
-  overlay.innerHTML = `
-    <div class="modal" style="max-width:480px">
-      <h2 style="margin-bottom:8px">🔗 Convidar Jogadores</h2>
-      <p style="color:var(--text-muted);font-family:'Space Mono',monospace;font-size:13px;margin-bottom:20px">
-        Copie o link abaixo e envie para os participantes.
-      </p>
-      <label>Link da sala</label>
-      <div style="display:flex;gap:8px;margin-bottom:8px">
-        <input id="invite-url-input" type="text" value="${url}" readonly
-          style="margin-bottom:0;cursor:pointer;background:var(--surface3)"
-          onclick="this.select()">
-        <button class="btn btn-accent" onclick="copyInviteUrl()" style="white-space:nowrap">Copiar</button>
-      </div>
-      <p id="copy-confirm" style="color:var(--accent);font-size:12px;font-family:'Space Mono',monospace;min-height:16px"></p>
-      <div class="modal-footer" style="margin-top:16px">
-        <button class="btn" onclick="document.getElementById('invite-modal').remove()">Fechar</button>
-      </div>
-    </div>
-  `;
-  document.body.appendChild(overlay);
-  // Auto-select the input
-  setTimeout(() => document.getElementById('invite-url-input')?.select(), 50);
-}
-
-function copyInviteUrl() {
-  const inp = document.getElementById('invite-url-input');
+window.copyInviteUrl = function() {
+  const inp     = document.getElementById('invite-url-input');
   const confirm = document.getElementById('copy-confirm');
   inp.select();
   inp.setSelectionRange(0, 99999);
 
-  let copied = false;
+  const ok = () => { confirm.textContent = '✓ Link copiado com sucesso!'; };
+  const fail = () => {
+    try { document.execCommand('copy'); ok(); }
+    catch { confirm.textContent = 'Selecione o texto e pressione Ctrl+C'; }
+  };
 
-  // Try modern API first
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(inp.value)
-      .then(() => { confirm.textContent = '✓ Link copiado com sucesso!'; })
-      .catch(() => legacyCopy());
-    return;
+  if (navigator.clipboard?.writeText) {
+    navigator.clipboard.writeText(inp.value).then(ok).catch(fail);
+  } else {
+    fail();
   }
-  legacyCopy();
+};
 
-  function legacyCopy() {
-    try {
-      document.execCommand('copy');
-      confirm.textContent = '✓ Link copiado com sucesso!';
-    } catch {
-      confirm.textContent = 'Selecione o texto acima e pressione Ctrl+C para copiar.';
-    }
+/* ═══════════════════════════════════
+   KEYBOARD SHORTCUTS
+═══════════════════════════════════ */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    if (document.activeElement.id === 'card-value-input') window.addCardValue();
+    if (document.activeElement.id === 'host-name-input')  window.createRoom();
+    if (document.activeElement.id === 'join-name')        window.confirmJoin();
   }
-}
+  if (e.key === 'Escape') {
+    closeCreateModal();
+    closeInviteModal();
+  }
+});
 
-/* ═══════════════════════════════════════════
-   INIT — check URL params
-═══════════════════════════════════════════ */
-function init() {
+/* ═══════════════════════════════════
+   INIT — route by URL param
+═══════════════════════════════════ */
+async function init() {
   const params = new URLSearchParams(location.search);
   const roomId = params.get('room');
 
   if (roomId) {
-    const data = getRoomData(roomId);
-    if (!data) { showScreen('home'); return; }
+    loading(true, 'Carregando sala...');
+    try {
+      const snap = await getDoc(doc(db, 'rooms', roomId));
+      if (!snap.exists()) {
+        loading(false);
+        alert('Sala não encontrada.');
+        showScreen('home');
+        return;
+      }
 
-    // Check if already in this room
-    const me = JSON.parse(localStorage.getItem('ppoker_me') || 'null');
-    if (me && me.roomId === roomId && data.players[me.myId]) {
+      const data = snap.data();
       state.roomId = roomId;
-      state.myId = me.myId;
-      state.myName = me.myName;
-      state.isHost = data.hostId === me.myId;
-      initChannel();
-      enterRoom();
-      return;
-    }
 
-    // Show join screen
-    state.roomId = roomId;
-    document.getElementById('join-room-label').textContent = `Sala: ${data.name}`;
-    showScreen('join');
-    setTimeout(() => document.getElementById('join-name').focus(), 100);
+      // Check if already in this room
+      const session = JSON.parse(localStorage.getItem('ppoker_session') || 'null');
+      if (session && session.roomId === roomId && data.players?.[session.myId]) {
+        state.myId   = session.myId;
+        state.myName = session.myName;
+        state.isHost = data.hostId === session.myId;
+        loading(false);
+        enterRoom(data);
+        return;
+      }
+
+      // Show join screen
+      document.getElementById('join-room-label').textContent = `Sala: ${data.name}`;
+      loading(false);
+      showScreen('join');
+      setTimeout(() => document.getElementById('join-name').focus(), 80);
+
+    } catch(e) {
+      loading(false);
+      alert('Erro ao carregar sala: ' + e.message);
+      showScreen('home');
+    }
     return;
   }
 
-  // Check session
-  const me = JSON.parse(localStorage.getItem('ppoker_me') || 'null');
-  if (me) {
-    const data = getRoomData(me.roomId);
-    if (data && data.players[me.myId]) {
-      state.roomId = me.roomId;
-      state.myId = me.myId;
-      state.myName = me.myName;
-      state.isHost = data.hostId === me.myId;
-      initChannel();
-      enterRoom();
-      return;
-    }
+  // Check existing session
+  const session = JSON.parse(localStorage.getItem('ppoker_session') || 'null');
+  if (session) {
+    loading(true, 'Retomando sessão...');
+    try {
+      const snap = await getDoc(doc(db, 'rooms', session.roomId));
+      if (snap.exists() && snap.data().players?.[session.myId]) {
+        const data = snap.data();
+        state = {
+          roomId:  session.roomId,
+          myId:    session.myId,
+          myName:  session.myName,
+          isHost:  data.hostId === session.myId,
+        };
+        loading(false);
+        enterRoom(data);
+        return;
+      }
+    } catch {}
+    loading(false);
   }
 
   showScreen('home');
