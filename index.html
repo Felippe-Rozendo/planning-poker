@@ -322,19 +322,24 @@
     font-family: 'Space Mono', monospace;
   }
 
-  .avg-display { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-  .avg-label { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--text-muted); font-family: 'Space Mono', monospace; }
+  .avg-display { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .avg-label { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--text-muted); font-family: 'Space Mono', monospace; margin-bottom: 4px; }
   .avg-value {
-    font-size: 48px;
+    font-size: 56px;
     font-weight: 800;
     color: var(--accent);
     line-height: 1;
     font-family: 'Space Mono', monospace;
-    word-break: break-word;
     text-align: center;
-    max-width: 300px;
+    letter-spacing: 4px;
   }
-  .avg-sub { font-size: 13px; color: var(--text-muted); font-family: 'Space Mono', monospace; margin-top: 2px; }
+  .avg-sub {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-family: 'Space Mono', monospace;
+    text-align: center;
+    letter-spacing: 4px;
+  }
 
   /* ── PLAYER CARD ── */
   .player-slot { display: flex; flex-direction: column; align-items: center; gap: 8px; }
@@ -551,22 +556,31 @@
   /* ── TOAST ── */
   .toast {
     position: fixed;
-    bottom: 24px;
-    right: 24px;
-    background: var(--surface);
-    border: 1px solid var(--accent);
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%) translateY(0);
+    background: #16a34a;
     border-radius: 10px;
-    padding: 12px 18px;
-    font-size: 13px;
-    font-family: 'Space Mono', monospace;
-    color: var(--accent);
+    padding: 14px 28px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Syne', sans-serif;
+    color: #fff;
     z-index: 300;
-    animation: toastIn .3s ease;
-    max-width: 300px;
+    white-space: nowrap;
+    box-shadow: 0 8px 32px rgba(0,0,0,.4);
+    animation: toastUp .35s cubic-bezier(.22,1,.36,1) forwards;
   }
-  @keyframes toastIn {
-    from { transform: translateY(16px); opacity: 0; }
-    to   { transform: translateY(0);    opacity: 1; }
+  .toast.hide {
+    animation: toastDown .35s cubic-bezier(.55,0,1,.45) forwards;
+  }
+  @keyframes toastUp {
+    from { transform: translateX(-50%) translateY(80px); opacity: 0; }
+    to   { transform: translateX(-50%) translateY(0);    opacity: 1; }
+  }
+  @keyframes toastDown {
+    from { transform: translateX(-50%) translateY(0);    opacity: 1; }
+    to   { transform: translateX(-50%) translateY(80px); opacity: 0; }
   }
 
   /* ── CLOSED SCREEN ── */
@@ -641,8 +655,7 @@
           <div class="table-status" id="table-status">Votação em andamento...</div>
           <div class="avg-display" id="avg-display" style="display:none">
             <span class="avg-label" id="avg-label">Mais votado</span>
-            <span class="avg-value" id="avg-value">–</span>
-            <span class="avg-sub" id="avg-sub"></span>
+            <div id="avg-content"></div>
           </div>
         </div>
         <div class="players-bottom" id="players-bottom"></div>
@@ -702,24 +715,7 @@
   </div>
 </div>
 
-<!-- INVITE MODAL -->
-<div class="modal-overlay" id="invite-modal">
-  <div class="modal" style="max-width:480px">
-    <h2>🔗 Convidar Jogadores</h2>
-    <p style="color:var(--text-muted);font-family:'Space Mono',monospace;font-size:13px;margin-bottom:20px">
-      Copie o link abaixo e envie para os participantes.
-    </p>
-    <label>Link da sala</label>
-    <div style="display:flex;gap:8px;margin-bottom:8px">
-      <input id="invite-url-input" type="text" readonly onclick="this.select()" style="margin-bottom:0">
-      <button class="btn btn-accent" onclick="copyInviteUrl()">Copiar</button>
-    </div>
-    <p id="copy-confirm" style="color:var(--accent);font-size:12px;font-family:'Space Mono',monospace;min-height:18px;margin-bottom:16px"></p>
-    <div class="modal-footer">
-      <button class="btn" onclick="closeInviteModal()">Fechar</button>
-    </div>
-  </div>
-</div>
+
 
 <!-- LOADING -->
 <div class="loading-overlay" id="loading">
@@ -1002,31 +998,37 @@ function renderRoom(data) {
     const cardDescMap = {};
     (data.cards || []).forEach(c => { cardDescMap[cardLabel(c)] = cardDesc(c); });
 
-    const entries = Object.entries(voteCounts);
-    const subEl   = document.getElementById('avg-sub');
+    const entries   = Object.entries(voteCounts);
+    const labelEl   = document.getElementById('avg-label');
+    const contentEl = document.getElementById('avg-content');
 
     if (entries.length === 0) {
-      document.getElementById('avg-label').textContent = 'Mais votado';
-      document.getElementById('avg-value').textContent = '–';
-      document.getElementById('avg-value').style.fontSize = '48px';
-      if (subEl) subEl.textContent = '';
+      labelEl.textContent = 'Mais votado';
+      contentEl.innerHTML = `<div style="font-size:56px;font-weight:800;color:var(--accent);font-family:'Space Mono',monospace;text-align:center">–</div>`;
     } else {
       const maxCount = Math.max(...entries.map(([,c]) => c));
       const winners  = entries.filter(([,c]) => c === maxCount).map(([v]) => v);
 
       if (winners.length === 1) {
-        const winDesc = cardDescMap[winners[0]] || '';
-        document.getElementById('avg-label').textContent = 'Mais votado';
-        document.getElementById('avg-value').textContent = winners[0];
-        document.getElementById('avg-value').style.fontSize = '48px';
-        if (subEl) subEl.textContent = winDesc;
+        const desc = cardDescMap[winners[0]] || '';
+        labelEl.textContent = 'Mais votado';
+        contentEl.innerHTML = `
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+            <span style="font-size:56px;font-weight:800;color:var(--accent);font-family:'Space Mono',monospace;line-height:1">${winners[0]}</span>
+            ${desc ? `<span style="font-size:13px;color:var(--text-muted);font-family:'Space Mono',monospace;letter-spacing:2px">${desc}</span>` : ''}
+          </div>`;
       } else {
-        const joined = winners.join('  ·  ');
-        document.getElementById('avg-label').textContent = 'Empate entre';
-        document.getElementById('avg-value').textContent = joined;
-        document.getElementById('avg-value').style.fontSize =
-          joined.length > 12 ? '22px' : joined.length > 7 ? '30px' : '40px';
-        if (subEl) subEl.textContent = winners.map(w => cardDescMap[w] || w).join(' · ');
+        labelEl.textContent = 'Empate entre';
+        const cols = winners.map(w => {
+          const desc = cardDescMap[w] || '';
+          return `
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;min-width:48px">
+              <span style="font-size:48px;font-weight:800;color:var(--accent);font-family:'Space Mono',monospace;line-height:1">${w}</span>
+              ${desc ? `<span style="font-size:12px;color:var(--text-muted);font-family:'Space Mono',monospace;letter-spacing:2px">${desc}</span>` : ''}
+            </div>`;
+        });
+        const sep = `<span style="font-size:32px;color:var(--border);font-family:'Space Mono',monospace;align-self:flex-start;padding-top:8px">·</span>`;
+        contentEl.innerHTML = `<div style="display:flex;align-items:flex-start;gap:16px;justify-content:center">${cols.join(sep)}</div>`;
       }
     }
 
@@ -1185,34 +1187,44 @@ window.goHome = function() {
 ═══════════════════════════════════ */
 window.inviteLink = function() {
   const url = `${location.origin}${location.pathname}?room=${state.roomId}`;
-  document.getElementById('invite-url-input').value = url;
-  document.getElementById('copy-confirm').textContent = '';
-  document.getElementById('invite-modal').classList.add('open');
-  setTimeout(() => document.getElementById('invite-url-input').select(), 80);
-};
 
-window.closeInviteModal = function() {
-  document.getElementById('invite-modal').classList.remove('open');
-};
-
-window.copyInviteUrl = function() {
-  const inp     = document.getElementById('invite-url-input');
-  const confirm = document.getElementById('copy-confirm');
-  inp.select();
-  inp.setSelectionRange(0, 99999);
-
-  const ok = () => { confirm.textContent = '✓ Link copiado com sucesso!'; };
-  const fail = () => {
-    try { document.execCommand('copy'); ok(); }
-    catch { confirm.textContent = 'Selecione o texto e pressione Ctrl+C'; }
+  const showSuccess = () => showToast('✓ Link copiado! Envie para os participantes.');
+  const showFallback = () => {
+    // Fallback: create temp input, copy, remove
+    const tmp = document.createElement('input');
+    tmp.value = url;
+    tmp.style.position = 'fixed';
+    tmp.style.opacity = '0';
+    document.body.appendChild(tmp);
+    tmp.focus();
+    tmp.select();
+    try {
+      document.execCommand('copy');
+      showSuccess();
+    } catch {
+      prompt('Copie o link:', url);
+    }
+    document.body.removeChild(tmp);
   };
 
   if (navigator.clipboard?.writeText) {
-    navigator.clipboard.writeText(inp.value).then(ok).catch(fail);
+    navigator.clipboard.writeText(url).then(showSuccess).catch(showFallback);
   } else {
-    fail();
+    showFallback();
   }
 };
+
+function showToast(msg) {
+  // Remove existing toast if any
+  document.querySelectorAll('.toast').forEach(t => t.remove());
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  // After 3.6s start hide animation, remove after 4s
+  setTimeout(() => { t.classList.add('hide'); }, 3600);
+  setTimeout(() => { t.remove(); }, 4000);
+}
 
 /* ═══════════════════════════════════
    KEYBOARD SHORTCUTS
@@ -1226,7 +1238,6 @@ document.addEventListener('keydown', e => {
   }
   if (e.key === 'Escape') {
     closeCreateModal();
-    closeInviteModal();
   }
 });
 
