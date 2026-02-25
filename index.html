@@ -583,6 +583,23 @@
     to   { transform: translateX(-50%) translateY(80px); opacity: 0; }
   }
 
+  /* ── CONFIRM MODAL ── */
+  .confirm-modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 32px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 30px 80px rgba(0,0,0,.6);
+    animation: slideUp .22s ease;
+    text-align: center;
+  }
+  .confirm-modal .confirm-icon { font-size: 40px; margin-bottom: 16px; }
+  .confirm-modal h3 { font-size: 20px; font-weight: 700; margin-bottom: 10px; }
+  .confirm-modal p  { color: var(--text-muted); font-family: 'Space Mono', monospace; font-size: 13px; line-height: 1.6; margin-bottom: 28px; }
+  .confirm-modal .confirm-btns { display: flex; gap: 10px; justify-content: center; }
+
   /* ── CLOSED SCREEN ── */
   #closed {
     align-items: center;
@@ -716,6 +733,19 @@
 </div>
 
 
+
+<!-- CONFIRM MODAL -->
+<div class="modal-overlay" id="confirm-modal">
+  <div class="confirm-modal">
+    <div class="confirm-icon" id="confirm-icon">⚠️</div>
+    <h3 id="confirm-title">Confirmar</h3>
+    <p id="confirm-message">Tem certeza?</p>
+    <div class="confirm-btns">
+      <button class="btn" id="confirm-cancel" onclick="closeConfirm()">Cancelar</button>
+      <button class="btn btn-danger" id="confirm-ok">Confirmar</button>
+    </div>
+  </div>
+</div>
 
 <!-- LOADING -->
 <div class="loading-overlay" id="loading">
@@ -1144,35 +1174,68 @@ window.toggleReveal = async function() {
   await updateDoc(roomRef, { revealed: !snap.data().revealed });
 };
 
-window.resetVotes = async function() {
-  if (!confirm('Resetar todos os votos?')) return;
-  const roomRef = doc(db, 'rooms', state.roomId);
-  const snap    = await getDoc(roomRef);
-  const data    = snap.data();
-  const updates = { revealed: false };
-  Object.keys(data.players).forEach(id => {
-    updates[`players.${id}.vote`] = null;
+window.resetVotes = function() {
+  showConfirm({
+    icon:    '↺',
+    title:   'Resetar votos',
+    message: 'Todos os votos serão apagados e a rodada será reiniciada.',
+    okLabel: 'Resetar',
+    okClass: 'btn-danger',
+    onOk:    async () => {
+      const roomRef = doc(db, 'rooms', state.roomId);
+      const snap    = await getDoc(roomRef);
+      const data    = snap.data();
+      const updates = { revealed: false };
+      Object.keys(data.players).forEach(id => {
+        updates[`players.${id}.vote`] = null;
+      });
+      await updateDoc(roomRef, updates);
+    },
   });
-  await updateDoc(roomRef, updates);
 };
+
+/* ═══════════════════════════════════
+   CONFIRM DIALOG
+═══════════════════════════════════ */
+function showConfirm({ icon, title, message, okLabel, okClass, onOk }) {
+  document.getElementById('confirm-icon').textContent    = icon    || '⚠️';
+  document.getElementById('confirm-title').textContent   = title   || 'Confirmar';
+  document.getElementById('confirm-message').textContent = message || '';
+  const okBtn = document.getElementById('confirm-ok');
+  okBtn.textContent  = okLabel  || 'Confirmar';
+  okBtn.className    = 'btn ' + (okClass || 'btn-danger');
+  okBtn.onclick      = () => { closeConfirm(); onOk(); };
+  document.getElementById('confirm-modal').classList.add('open');
+}
+function closeConfirm() {
+  document.getElementById('confirm-modal').classList.remove('open');
+}
 
 /* ═══════════════════════════════════
    CLOSE ROOM (host only)
 ═══════════════════════════════════ */
-window.closeRoom = async function() {
+window.closeRoom = function() {
   if (!state.isHost) return;
-  if (!confirm('Encerrar a sala? Todos os dados serão apagados e os participantes serão desconectados.')) return;
-  loading(true, 'Encerrando sala...');
-  try {
-    if (unsubscribe) { unsubscribe(); unsubscribe = null; }
-    await deleteDoc(doc(db, 'rooms', state.roomId));
-    localStorage.removeItem('ppoker_session');
-    loading(false);
-    goHome();
-  } catch(e) {
-    loading(false);
-    alert('Erro ao encerrar sala: ' + e.message);
-  }
+  showConfirm({
+    icon:    '🚪',
+    title:   'Encerrar sala',
+    message: 'Todos os dados serão apagados e os participantes serão desconectados.',
+    okLabel: 'Encerrar',
+    okClass: 'btn-danger',
+    onOk:    async () => {
+      loading(true, 'Encerrando sala...');
+      try {
+        if (unsubscribe) { unsubscribe(); unsubscribe = null; }
+        await deleteDoc(doc(db, 'rooms', state.roomId));
+        localStorage.removeItem('ppoker_session');
+        loading(false);
+        goHome();
+      } catch(e) {
+        loading(false);
+        showToast('Erro ao encerrar sala: ' + e.message);
+      }
+    },
+  });
 };
 
 window.goHome = function() {
