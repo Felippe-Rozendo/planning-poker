@@ -322,9 +322,19 @@
     font-family: 'Space Mono', monospace;
   }
 
-  .avg-display { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .avg-display { display: flex; flex-direction: column; align-items: center; gap: 8px; }
   .avg-label { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--text-muted); font-family: 'Space Mono', monospace; }
-  .avg-value { font-size: 60px; font-weight: 800; color: var(--accent); line-height: 1; }
+  .avg-value {
+    font-size: 48px;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+    font-family: 'Space Mono', monospace;
+    word-break: break-word;
+    text-align: center;
+    max-width: 300px;
+  }
+  .avg-sub { font-size: 13px; color: var(--text-muted); font-family: 'Space Mono', monospace; margin-top: 2px; }
 
   /* ── PLAYER CARD ── */
   .player-slot { display: flex; flex-direction: column; align-items: center; gap: 8px; }
@@ -415,19 +425,21 @@
   .vote-cards { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
 
   .vote-card {
-    width: 52px;
-    height: 74px;
+    width: 60px;
+    height: 84px;
     background: var(--surface2);
     border: 2px solid var(--border);
     border-radius: 8px;
     cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 15px;
-    font-weight: 700;
-    font-family: 'Space Mono', monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
     transition: all .15s;
     color: var(--text);
     user-select: none;
+    padding: 6px 4px;
   }
   .vote-card:hover {
     border-color: var(--accent2);
@@ -441,6 +453,19 @@
     color: var(--accent);
     transform: translateY(-10px);
     box-shadow: 0 10px 28px rgba(110,231,183,.3);
+  }
+  .vote-card-label {
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Space Mono', monospace;
+    line-height: 1;
+  }
+  .vote-card-desc {
+    font-size: 9px;
+    font-family: 'Space Mono', monospace;
+    opacity: .55;
+    line-height: 1;
+    text-align: center;
   }
 
   /* ── RESULTS TABLE ── */
@@ -617,6 +642,7 @@
           <div class="avg-display" id="avg-display" style="display:none">
             <span class="avg-label" id="avg-label">Mais votado</span>
             <span class="avg-value" id="avg-value">–</span>
+            <span class="avg-sub" id="avg-sub"></span>
           </div>
         </div>
         <div class="players-bottom" id="players-bottom"></div>
@@ -646,7 +672,7 @@
     <div class="closed-card">
       <div class="closed-icon">🚪</div>
       <h2>Sala Encerrada</h2>
-      <p>O facilitador encerrou esta sala.<br>Todos os dados foram removidos.</p>
+      <p>O anfitrião encerrou esta sala.<br>Todos os dados foram removidos.</p>
       <button class="btn btn-primary" style="width:100%" onclick="goHome()">← Voltar para o início</button>
     </div>
   </div>
@@ -657,18 +683,17 @@
     <h2>🃏 Criar Nova Sala</h2>
     <label>Nome da sala</label>
     <input id="room-name-input" type="text" placeholder="Ex: Sprint 42" maxlength="40" autocomplete="off">
-    <label>Seu nome (facilitador)</label>
+    <label>Seu nome (anfitrião)</label>
     <input id="host-name-input" type="text" placeholder="Ex: João" maxlength="20" autocomplete="off">
     <label>Cartas de pontuação</label>
     <div class="cards-tags" id="cards-tags"></div>
-    <div class="card-input-row">
-      <input id="card-value-input" type="text" placeholder="Valor (Ex: 1, M, XL, ?)..." maxlength="6">
+    <div class="card-input-row" style="margin-bottom:8px">
+      <input id="card-value-input" type="text" placeholder="Sigla (ex: XL)" maxlength="6" style="flex:0 0 90px">
+      <input id="card-desc-input" type="text" placeholder="Descrição (ex: 13 dias)" maxlength="30">
       <button class="btn" onclick="addCardValue()">+ Add</button>
     </div>
     <div class="preset-row">
-      <button class="btn btn-sm" onclick="loadPreset('fibonacci')">Fibonacci</button>
-      <button class="btn btn-sm" onclick="loadPreset('tshirt')">T-Shirt</button>
-      <button class="btn btn-sm" onclick="loadPreset('simple')">1 – 5</button>
+      <button class="btn btn-sm btn-accent" onclick="loadPreset('tshirt')">↺ Carregar T-Shirt</button>
     </div>
     <div class="modal-footer" style="margin-top:24px">
       <button class="btn" onclick="closeCreateModal()">Cancelar</button>
@@ -737,13 +762,23 @@ let state = {
 let unsubscribe = null;
 let topicDebounce = null;
 
+// Cards are objects: { label: 'PP', desc: '1 dia' }
+// For backward compat, if card is a plain string treat desc as ''
 const PRESETS = {
-  fibonacci: ['1','2','3','5','8','13','21','?'],
-  tshirt:    ['PP','P','M','G','GG','?'],
-  simple:    ['1','2','3','4','5'],
+  tshirt: [
+    { label: 'PP', desc: '1 dia'  },
+    { label: 'P',  desc: '3 dias' },
+    { label: 'M',  desc: '5 dias' },
+    { label: 'G',  desc: '8 dias' },
+    { label: 'GG', desc: '10 dias'},
+    { label: '?',  desc: ''       },
+  ],
 };
 
-let pendingCards = [...PRESETS.fibonacci];
+function cardLabel(c) { return typeof c === 'object' ? c.label : c; }
+function cardDesc(c)  { return typeof c === 'object' ? (c.desc || '') : ''; }
+
+let pendingCards = PRESETS.tshirt.map(c => ({...c}));
 
 /* ═══════════════════════════════════
    HELPERS
@@ -770,18 +805,23 @@ function toast(msg) {
    CARD BUILDER
 ═══════════════════════════════════ */
 window.loadPreset = function(key) {
-  pendingCards = [...PRESETS[key]];
+  pendingCards = PRESETS[key].map(c => ({...c}));
   renderCardTags();
 };
 
 window.addCardValue = function() {
-  const inp = document.getElementById('card-value-input');
-  const val = inp.value.trim();
-  if (!val) return;
-  if (!pendingCards.includes(val)) pendingCards.push(val);
-  inp.value = '';
+  const labelInp = document.getElementById('card-value-input');
+  const descInp  = document.getElementById('card-desc-input');
+  const label = labelInp.value.trim();
+  const desc  = descInp ? descInp.value.trim() : '';
+  if (!label) return;
+  if (!pendingCards.find(c => cardLabel(c) === label)) {
+    pendingCards.push({ label, desc });
+  }
+  labelInp.value = '';
+  if (descInp) descInp.value = '';
   renderCardTags();
-  inp.focus();
+  labelInp.focus();
 };
 
 window.removeCard = function(i) {
@@ -791,19 +831,23 @@ window.removeCard = function(i) {
 
 function renderCardTags() {
   document.getElementById('cards-tags').innerHTML =
-    pendingCards.map((v, i) => `
-      <span class="card-tag">
-        ${v}
-        <span class="remove-tag" onclick="removeCard(${i})">×</span>
-      </span>
-    `).join('');
+    pendingCards.map((c, i) => {
+      const lbl  = cardLabel(c);
+      const desc = cardDesc(c);
+      return `
+        <span class="card-tag">
+          <strong>${lbl}</strong>${desc ? `<span style="opacity:.5;font-size:11px"> ${desc}</span>` : ''}
+          <span class="remove-tag" onclick="removeCard(${i})">×</span>
+        </span>
+      `;
+    }).join('');
 }
 
 /* ═══════════════════════════════════
    CREATE MODAL
 ═══════════════════════════════════ */
 window.openCreateModal = function() {
-  pendingCards = [...PRESETS.fibonacci];
+  pendingCards = [...PRESETS.tshirt];
   renderCardTags();
   document.getElementById('room-name-input').value = '';
   document.getElementById('host-name-input').value = '';
@@ -829,7 +873,7 @@ window.createRoom = async function() {
 
   const roomData = {
     name:     roomName,
-    cards:    pendingCards,
+    cards:    pendingCards.map(c => ({ label: cardLabel(c), desc: cardDesc(c) })),
     hostId:   myId,
     topic:    '',
     revealed: false,
@@ -954,25 +998,35 @@ function renderRoom(data) {
       if (p.vote !== null) voteCounts[p.vote] = (voteCounts[p.vote] || 0) + 1;
     });
 
+    // Build label->desc map from room cards
+    const cardDescMap = {};
+    (data.cards || []).forEach(c => { cardDescMap[cardLabel(c)] = cardDesc(c); });
+
     const entries = Object.entries(voteCounts);
+    const subEl   = document.getElementById('avg-sub');
+
     if (entries.length === 0) {
       document.getElementById('avg-label').textContent = 'Mais votado';
       document.getElementById('avg-value').textContent = '–';
-      document.getElementById('avg-value').style.fontSize = '60px';
+      document.getElementById('avg-value').style.fontSize = '48px';
+      if (subEl) subEl.textContent = '';
     } else {
       const maxCount = Math.max(...entries.map(([,c]) => c));
       const winners  = entries.filter(([,c]) => c === maxCount).map(([v]) => v);
 
       if (winners.length === 1) {
+        const winDesc = cardDescMap[winners[0]] || '';
         document.getElementById('avg-label').textContent = 'Mais votado';
         document.getElementById('avg-value').textContent = winners[0];
-        document.getElementById('avg-value').style.fontSize = '60px';
+        document.getElementById('avg-value').style.fontSize = '48px';
+        if (subEl) subEl.textContent = winDesc;
       } else {
+        const joined = winners.join('  ·  ');
         document.getElementById('avg-label').textContent = 'Empate entre';
-        document.getElementById('avg-value').textContent = winners.join(' · ');
-        // Scale font down if many values
+        document.getElementById('avg-value').textContent = joined;
         document.getElementById('avg-value').style.fontSize =
-          winners.join(' · ').length > 10 ? '28px' : '40px';
+          joined.length > 12 ? '22px' : joined.length > 7 ? '30px' : '40px';
+        if (subEl) subEl.textContent = winners.map(w => cardDescMap[w] || w).join(' · ');
       }
     }
 
@@ -986,11 +1040,16 @@ function renderRoom(data) {
 
   // Vote cards
   const myVote = players[state.myId]?.vote ?? null;
-  document.getElementById('vote-cards').innerHTML = data.cards.map(c => `
-    <div class="vote-card ${myVote === c ? 'selected' : ''}" onclick="castVote('${c}')">
-      ${c}
-    </div>
-  `).join('');
+  document.getElementById('vote-cards').innerHTML = data.cards.map(c => {
+    const lbl  = cardLabel(c);
+    const desc = cardDesc(c);
+    return `
+      <div class="vote-card ${myVote === lbl ? 'selected' : ''}" onclick="castVote('${lbl}')">
+        <span class="vote-card-label">${lbl}</span>
+        ${desc ? `<span class="vote-card-desc">${desc}</span>` : ''}
+      </div>
+    `;
+  }).join('');
 
   // Reveal button label
   document.getElementById('btn-reveal').textContent = data.revealed ? '🔒 Ocultar' : '👁 Revelar';
@@ -1064,6 +1123,14 @@ document.getElementById('topic-input')?.addEventListener('input', (e) => {
       await updateDoc(doc(db, 'rooms', state.roomId), { topic: e.target.value });
     } catch {}
   }, 600);
+});
+
+document.getElementById('topic-input')?.addEventListener('blur', async (e) => {
+  if (!state.isHost) return;
+  clearTimeout(topicDebounce);
+  try {
+    await updateDoc(doc(db, 'rooms', state.roomId), { topic: e.target.value });
+  } catch {}
 });
 
 /* ═══════════════════════════════════
@@ -1153,6 +1220,7 @@ window.copyInviteUrl = function() {
 document.addEventListener('keydown', e => {
   if (e.key === 'Enter') {
     if (document.activeElement.id === 'card-value-input') window.addCardValue();
+    if (document.activeElement.id === 'card-desc-input')  window.addCardValue();
     if (document.activeElement.id === 'host-name-input')  window.createRoom();
     if (document.activeElement.id === 'join-name')        window.confirmJoin();
   }
